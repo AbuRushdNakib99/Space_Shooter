@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Space Shooter</title>
+  </head>
+  <style>
+    body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: url("space.jpg");
+      background-size: cover;
+    }
+    #board {
+      position: relative;
+      width: 600px;
+      height: 600px;
+      margin: 40px auto;
+      border: 3px solid white;
+      background-color: black;
+      overflow: hidden;
+    }
+
+    #jet {
+      position: absolute;
+      width: 40px;
+      height: 40px;
+      background: url("rocket.png");
+      background-size: contain;
+      background-repeat: no-repeat;
+      left: 50%;
+      bottom: 0px;
+    }
+
+    .bullets {
+      position: absolute;
+      bottom: 40px;
+      left: 51%;
+      width: 20px;
+      height: 20px;
+      background: url("bullet.png");
+      background-size: contain;
+      background-repeat: no-repeat;
+    }
+
+    .rocks {
+      position: absolute;
+      top: 0px;
+      width: 50px;
+      height: 50px;
+      background: url("alien.png");
+      background-size: contain;
+      background-repeat: no-repeat;
+    }
+    #points {
+      position: absolute;
+      top: 0px;
+      margin: 40px;
+      opacity: 0.7;
+      font-size: 10em;
+      color: white;
+    }
+  </style>
+  <script defer></script>
+  <body>
+    <div id="board">
+      <div class="rocks"></div>
+      <div id="jet"></div>
+    </div>
+    <div id="points">0</div>
+  </body>
+
+  <script>
+      let jet = document.getElementById("jet");
+      let board = document.getElementById("board");
+
+    window.addEventListener("keydown", (e) => {
+    let left = parseInt(window.getComputedStyle(jet).getPropertyValue("left"));
+    if (e.key == "ArrowLeft" && left > 0) {
+    jet.style.left = left - 10 + "px";
+   }
+  
+    else if (e.key == "ArrowRight" && left <= 460) {
+    jet.style.left = left + 10 + "px";
+   } 
+
+    if (e.key == "ArrowUp" || e.keyCode == 32) {
+    let bullet = document.createElement("div");
+    bullet.classList.add("bullets");
+    board.appendChild(bullet);
+
+    let movebullet = setInterval(() => {
+      let rocks = document.getElementsByClassName("rocks");
+
+      for (let i = 0; i < rocks.length; i++) {
+        let rock = rocks[i];
+        if (rock != undefined) {
+          let rockbound = rock.getBoundingClientRect();
+          let bulletbound = bullet.getBoundingClientRect();
+
+          if (
+            bulletbound.left >= rockbound.left &&
+            bulletbound.right <= rockbound.right &&
+            bulletbound.top <= rockbound.top &&
+            bulletbound.bottom <= rockbound.bottom
+          ) {
+            rock.parentElement.removeChild(rock);
+            document.getElementById("points").innerHTML =
+              parseInt(document.getElementById("points").innerHTML) + 1;
+          }
+        }
+      }
+      let bulletbottom = parseInt(
+        window.getComputedStyle(bullet).getPropertyValue("bottom")
+      );
+
+      
+      if (bulletbottom >= 500) {
+        clearInterval(movebullet);
+      }
+
+      bullet.style.left = left + "px"; //
+      bullet.style.bottom = bulletbottom + 3 + "px";
+    });
+  }
+});
+
+let generaterocks = setInterval(() => {
+  let rock = document.createElement("div");
+  rock.classList.add("rocks");
+ 
+  let rockleft = parseInt(
+    window.getComputedStyle(rock).getPropertyValue("left")
+  );
+ 
+  rock.style.left = Math.floor(Math.random() * 450) + "px";
+
+  board.appendChild(rock);
+}, 1000);
+
+let moverocks = setInterval(() => {
+  let rocks = document.getElementsByClassName("rocks");
+
+  if (rocks != undefined) {
+    for (let i = 0; i < rocks.length; i++) {
+      
+      let rock = rocks[i]; 
+      let rocktop = parseInt(
+        window.getComputedStyle(rock).getPropertyValue("top")
+      );
+      
+      if (rocktop >= 500) {
+        alert("Mission Over");
+        clearInterval(moverocks);
+        window.location.reload();
+      }
+
+      rock.style.top = rocktop + 25 + "px";
+    }
+  }
+}, 450);
+  </script>
+</html>
